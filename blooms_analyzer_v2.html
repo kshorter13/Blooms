@@ -1,0 +1,1227 @@
+<!--KShorter -please ensure appropriate acknowledgement if adapting the following code -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloom's Taxonomy Analyzer</title>
+    <style>
+       .feedback-section {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.btn-feedback {
+    display: inline-block;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #1F2937 100% 0%, #1F2937 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-feedback:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(75, 85, 99, 0.3);
+}
+	 * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(165deg, #8B0000 0%, #000000 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1000px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: justify;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .subtitle1 {
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+	    font-weight: bold;
+        }
+
+        .subtitle2 {
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 16px;
+	    font-weight: bold;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-analyze {
+            background: linear-gradient(135deg, #1F2937 100% 0%, #1F2937 100%);
+            color: white;
+        }
+
+        .btn-analyze:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(75, 85, 99, 0.3);
+        }
+
+        .btn-clear {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quality-overview {
+            background: linear-gradient(135deg, #FFFFFF 0%, #d1d1d1 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .quality-score {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+            margin-bottom: 15px;
+        }
+
+        .score-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .score-excellent { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .score-good { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .score-fair { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .score-poor { background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%); }
+
+        /* Bloom's Pyramid Visualization */
+	.blooms-pyramid {
+	    display: flex;
+	    flex-direction: column;
+	    align-items: center;
+	    gap: 2px;
+	    flex-shrink: 0;
+	    min-width: 215px;
+	    width: 215px;
+	}
+
+        .pyramid-level {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 24px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: help;
+            position: relative;
+        }
+
+        .pyramid-level:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .pyramid-level.active {
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
+            transform: scale(1.1);
+        }
+
+        .pyramid-level.inactive {
+            opacity: 0.3;
+        }
+
+        .pyramid-creating { width: 140px; background: #ec4899; }
+        .pyramid-evaluating { width: 155px; background: #ef4444; }
+        .pyramid-analyzing { width: 170px; background: #f59e0b; }
+        .pyramid-applying { width: 185px; background: #10b981; }
+        .pyramid-understanding { width: 200px; background: #3b82f6; }
+        .pyramid-remembering { width: 215px; background: #8b5cf6; }
+
+        .pyramid-count {
+            position: absolute;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 9px;
+        }
+
+	.quality-details {
+	    display: flex;
+	    flex-direction: column;
+	    align-items: center;
+ 	    gap: 10px;
+	}
+
+	.quality-rating {
+	    font-size: 18px;
+	    font-weight: 700;
+	    color: #333;
+ 	   text-align: center;
+	    max-width: 80px;
+  	  line-height: 1.2;
+ 	   word-wrap: break-word;
+	}
+
+        .quality-metrics {
+	    display: flex;
+	    flex-direction: column;
+ 	    gap: 8px;
+	    align-items: flex-start;
+	}
+
+        .metric {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .metric-icon {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .icon-good { background: #38ef7d; color: white; }
+        .icon-warning { background: #fee140; color: #333; }
+        .icon-error { background: #ff5858; color: white; }
+
+	.issues-summary {
+	    display: flex;
+	    flex-direction: column;
+ 	    gap: 8px;
+ 	    align-items: flex-start;
+	}
+
+        .issue-badge {
+            display: block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-weak { background: #ffe5e5; color: #d32f2f; }
+        .badge-vague { background: #fff3e0; color: #e65100; }
+        .badge-overload { background: #e3f2fd; color: #1565c0; }
+        .badge-demonstrate { background: #fff9c4; color: #f57f17; }
+        .badge-capstone { background: #f3e5f5; color: #7b1fa2; }
+
+        .blooms-analysis {
+            margin-top: 25px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .verb-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .bloom-level {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease;
+        }
+
+        .bloom-level:hover {
+            transform: translateX(5px);
+        }
+
+        .level-remembering { border-left-color: #8b5cf6; }
+        .level-understanding { border-left-color: #3b82f6; }
+        .level-applying { border-left-color: #10b981; }
+        .level-analyzing { border-left-color: #f59e0b; }
+        .level-evaluating { border-left-color: #ef4444; }
+        .level-creating { border-left-color: #ec4899; }
+
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .level-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .level-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .badge-remembering { background: #8b5cf6; }
+        .badge-understanding { background: #3b82f6; }
+        .badge-applying { background: #10b981; }
+        .badge-analyzing { background: #f59e0b; }
+        .badge-evaluating { background: #ef4444; }
+        .badge-creating { background: #ec4899; }
+
+        .verbs-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .verb-chip {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .chip-remembering { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+        .chip-understanding { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+        .chip-applying { background: linear-gradient(135deg, #34d399, #10b981); }
+        .chip-analyzing { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .chip-evaluating { background: linear-gradient(135deg, #f87171, #ef4444); }
+        .chip-creating { background: linear-gradient(135deg, #f472b6, #ec4899); }
+
+        .highlighted-text {
+            margin-top: 25px;
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .highlighted-text p {
+            line-height: 1.8;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .highlight {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: help;
+            transition: transform 0.2s ease;
+        }
+
+        .highlight:hover {
+            transform: scale(1.05);
+        }
+
+        .hl-remembering { background: rgba(139, 92, 246, 0.2); color: #6d28d9; }
+        .hl-understanding { background: rgba(59, 130, 246, 0.2); color: #1e40af; }
+        .hl-applying { background: rgba(16, 185, 129, 0.2); color: #065f46; }
+        .hl-analyzing { background: rgba(245, 158, 11, 0.2); color: #92400e; }
+        .hl-evaluating { background: rgba(239, 68, 68, 0.2); color: #991b1b; }
+        .hl-creating { background: rgba(236, 72, 153, 0.2); color: #9f1239; }
+
+        .no-verbs {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #0a0a0a;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #8c0101;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .example-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .example-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .example-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .example-btn {
+            padding: 8px 14px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .example-btn:hover {
+            background: #a4a4a6;
+            color: white;
+            border-color: #a4a4a6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+          .quality-score {
+    		display: flex;
+    		align-items: flex-start;
+    		gap: 30px;
+   		margin-bottom: 15px;
+		}
+
+            .score-section {
+    		display: flex;
+    		align-items: center;
+    		gap: 20px;
+    		flex-direction: row-reverse;
+		}
+
+            .quality-details {
+	    	display: flex;
+	   	 flex-direction: column;
+	    	align-items: center;
+	    	gap: 10px;
+		}
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .blooms-pyramid {
+                transform: scale(0.85);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bloom's Taxonomy Analyser</h1>
+ <p class="subtitle1">⚠️ This is a proof-of-concept under development ⚠️</p>
+
+        <p class="subtitle">This tool aims to provide feedback on the alignment and phrasing of a learning outcomes to Bloom's Revised Taxonomy and the University's guiding principles on designing learning outcomes through the application of natural language processing techniques.<br><br>Whilst the tool offers guidance on the suitability and hierarchical alignment of Bloom’s verbs within a given learning outcome, it remains the responsibility of the user to critically evaluate the appropriateness of the feedback. Users are encouraged to reflect on the feedback provided and make revisions as required to ensure the learning outcomes are pedagogically sound and contextually relevant. </p>
+        <p class="subtitle2">This tool was conceptualised and developed by Dr. Kathleen Shorter.</p>
+    <div class="feedback-section">
+        <a href="mailto:kshorter@swin.edu.au?subject=Bloom's%20Taxonomy%20Analyser%20Feedback" class="btn-feedback">
+            📧 Provide Feedback
+        </a>
+    </div>
+        <div class="input-section">
+            <label for="objectiveInput">Enter Learning Outcome:</label>
+            <textarea 
+                id="objectiveInput" 
+                placeholder="Example: Students will analyse biomechanical data using motion capture systems..."
+            ></textarea>
+            
+            <div style="margin-top: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e0e0e0;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0;">
+                    <input type="checkbox" id="capstoneCheck" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span style="font-weight: 600; color: #333; font-size: 14px;"> This is a Capstone Unit</span>
+                    <span style="color: #666; font-size: 12px; font-weight: normal;">(Requiring application of higher-order learning)</span>
+                </label>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-analyze" onclick="analyzeObjective()">
+                    🔍 Analyse
+                </button>
+                <button class="btn-clear" onclick="clearAll()">
+                    🗑️ Clear
+                </button>
+            </div>
+        </div>
+
+        <div class="example-section">
+            <div class="example-title">Try these examples:</div>
+            <div class="example-buttons">
+                <button class="example-btn" onclick="loadExample(0)">Sound Outcome</button>
+                <button class="example-btn" onclick="loadExample(1)">Weak Verb</button>
+                <button class="example-btn" onclick="loadExample(2)">Vague Phrase</button>
+                <button class="example-btn" onclick="loadExample(3)">Verb Overload</button>
+                <button class="example-btn" onclick="loadExample(4)">Noun Forms</button>
+                <button class="example-btn" onclick="loadExample(5)">'Demonstrate' Issue</button>
+                <button class="example-btn" onclick="loadExample(6, true)">Capstone Example</button>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analysing learning outcome...</p>
+        </div>
+
+        <div class="results" id="results">
+            <!-- Results will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Example objectives
+        const examples = [
+            "Analyse biomechanical data using motion capture systems to identify movement patterns.",
+            "Students will learn about the principles of human movement.",
+            "Be familiar with research methods in exercise science.",
+            "Identify, analyse, evaluate, synthesise, compare, contrast, apply, and demonstrate understanding of biomechanical principles.",
+            "The analysis of movement patterns shows improvement. Through identification of key factors, we can develop understanding.",
+            "Demonstrate the optimal treatment protocol for musculoskeletal disorders.",
+            "Evaluate treatment outcomes and design evidence-based intervention strategies for complex clinical cases."
+        ];
+
+        // Bloom's taxonomy verb database
+        const bloomsData = {
+            'Remembering': ['cite', 'define', 'describe', 'draw', 'duplicate', 'enumerate', 'find', 
+                'identify', 'index', 'indicate', 'label', 'list', 'match', 'memorize', 'memorise', 
+                'name', 'outline', 'point', 'quote', 'read', 'recall', 'recite', 'recognize', 
+                'recognise', 'record', 'relate', 'repeat', 'reproduce', 'review', 'select', 
+                'state', 'study', 'tabulate', 'trace', 'tell', 'write'],
+            
+            'Understanding': ['add', 'approximate', 'articulate', 'associate', 'characterize', 
+                'characterise', 'clarify', 'classify', 'conclude', 'compare', 'compute', 'contrast', 
+                'convert', 'defend', 'demonstrate', 'describe', 'detail', 'differentiate', 'discuss', 
+                'distinguish', 'elaborate', 'estimate', 'example', 'explain', 'express', 'extend', 
+                'extrapolate', 'exemplify', 'generalize', 'generalise', 'give', 'identify', 
+                'illustrate', 'indicate', 'infer', 'interpret', 'locate', 'paraphrase', 'predict', 
+                'report', 'restate', 'review', 'rewrite', 'show', 'summarize', 'summarise', 
+                'trace', 'translate', 'visualize', 'visualise'],
+            
+            'Applying': ['act', 'administer', 'apply', 'articulate', 'assess', 'chart', 'change', 
+                'conduct', 'choose', 'collect', 'compute', 'construct', 'contribute', 'control', 
+                'demonstrate', 'determine', 'develop', 'discover', 'dramatise', 'draw', 'employ', 
+                'establish', 'extend', 'implement', 'include', 'inform', 'instruct', 'interview', 
+                'illustrate', 'interpret', 'manipulate', 'model', 'modify', 'operate', 'participate', 
+                'perform', 'plan', 'practice', 'predict', 'prepare', 'produce', 'provide', 'relate', 
+                'report', 'schedule', 'select', 'show', 'simulate', 'sketch', 'solve', 'subscribe', 
+                'transfer', 'translate', 'use'],
+            
+            'Analyzing': ['advertise', 'analyze', 'analyse', 'appraise', 'arrange', 'calculate', 
+                'categorize', 'categorise', 'certify', 'classify', 'compare', 'conclude', 'contrast', 
+                'correlate', 'criticize', 'criticise', 'deduce', 'defend', 'detect', 'determine', 
+                'develop', 'diagram', 'differentiate', 'discriminate', 'dissect', 'distinguish', 
+                'document', 'ensure', 'examine', 'explain', 'explore', 'file', 'group', 'identify', 
+                'illustrate', 'infer', 'inspect', 'interrupt', 'inventory', 'investigate', 'layout', 
+                'manage', 'maximize', 'maximise', 'minimize', 'minimise', 'model', 'order', 'outline', 
+                'prioritize', 'prioritise', 'question', 'relate', 'select', 'separate', 'simplify', 
+                'subdivide', 'survey', 'train'],
+            
+            'Evaluating': ['accept', 'appraise', 'argue', 'assess', 'award', 'choose', 'compare', 
+                'conclude', 'consider', 'contrast', 'convince', 'counsel', 'criticize', 'criticise', 
+                'critique', 'debate', 'decide', 'deduct', 'defend', 'determine', 'discriminate', 
+                'disprove', 'dispute', 'edit', 'estimate', 'evaluate', 'find', 'grade', 'hire', 
+                'influence', 'interpret', 'judge', 'justify', 'measure', 'moderate', 'modify', 
+                'opinion', 'perceive', 'persuade', 'prioritize', 'prove', 'rate', 'recommend', 
+                'relate', 'resolve', 'revise', 'score', 'select', 'summarize', 'support', 'test', 
+                'validate', 'value', 'verify'],
+            
+            'Creating': ['abstract', 'adapt', 'animate', 'arrange', 'assemble', 'author', 'budget', 
+                'build', 'categorize', 'categorise', 'code', 'combine', 'compile', 'compose', 
+                'construct', 'cope', 'correspond', 'create', 'cultivate', 'debug', 'depict', 'design', 
+                'develop', 'devise', 'dictate', 'enhance', 'facilitate', 'format', 'formulate', 
+                'generate', 'imagine', 'improve', 'incorporate', 'integrate', 'invent', 'manage', 
+                'minimize', 'model', 'modify', 'negotiate', 'network', 'organize', 'organise', 
+                'originate', 'perform', 'plan', 'predict', 'prepare', 'prescribe', 'produce', 
+                'progress', 'propose', 'rearrange', 'reconstruct', 'reinforce', 'reorganize', 
+                'reorganise', 'revise', 'rewrite', 'specify', 'summarize', 'synthesize', 'theorize', 
+                'transform', 'visualize', 'write']
+        };
+
+        const weakVerbs = new Set(['know', 'learn', 'understand', 'appreciate', 'comprehend', 
+            'grasp', 'realize', 'realise', 'believe', 'think', 'value']);
+
+        const vaguePhrases = [
+            'be aware of', 'become aware of', 'be familiar with', 'become familiar with',
+            'be acquainted with', 'become acquainted with', 'be exposed to',
+            'have knowledge of', 'gain knowledge of', 'have understanding of',
+            'gain understanding of', 'have appreciation for', 'gain appreciation for'
+        ];
+
+        // Common nouns that look like verbs - filter these out
+        const nounForms = new Set(['analysis', 'understanding', 'identification', 'application',
+            'evaluation', 'creation', 'development', 'management', 'assessment', 'implementation',
+            'investigation', 'examination', 'demonstration', 'explanation', 'interpretation']);
+
+        function loadExample(index, setCapstone = false) {
+            document.getElementById('objectiveInput').value = examples[index];
+            document.getElementById('capstoneCheck').checked = setCapstone;
+        }
+
+        function clearAll() {
+            document.getElementById('objectiveInput').value = '';
+            document.getElementById('results').classList.remove('show');
+        }
+
+        function analyzeObjective() {
+            const text = document.getElementById('objectiveInput').value.trim();
+            const isCapstone = document.getElementById('capstoneCheck').checked;
+            
+            if (!text) {
+                alert('Please enter a learning outcome to analyse.');
+                return;
+            }
+
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('results').classList.remove('show');
+
+            setTimeout(() => {
+                const analysis = performNLPAnalysis(text, isCapstone);
+                displayResults(analysis);
+                
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('results').classList.add('show');
+                
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 800);
+        }
+
+        function performNLPAnalysis(text, isCapstone = false) {
+            const words = tokenize(text);
+            const verbAnalysis = {};
+            const foundVerbs = [];
+            let weakVerbsFound = [];
+            let vaguePhrasesFound = [];
+            let hasDemonstrateVerb = false;
+            let startsWithDemonstrate = false;
+
+            // Check if objective starts with 'demonstrate' or 'to demonstrate'
+            const textLowerTrimmed = text.trim().toLowerCase();
+            if (textLowerTrimmed.startsWith('demonstrate') || textLowerTrimmed.startsWith('to demonstrate')) {
+                startsWithDemonstrate = true;
+            }
+
+            // Check for vague phrases
+            const textLower = text.toLowerCase();
+            vaguePhrases.forEach(phrase => {
+                if (textLower.includes(phrase)) {
+                    vaguePhrasesFound.push(phrase);
+                }
+            });
+
+            // Analyze each word
+            words.forEach((word, index) => {
+                const lemma = lemmatize(word);
+                const wordLower = word.toLowerCase();
+                const lemmaLower = lemma.toLowerCase();
+
+                // Skip if it's a known noun form
+                if (nounForms.has(wordLower) || nounForms.has(lemmaLower)) {
+                    return;
+                }
+
+                // Check for 'demonstrate' verb usage
+                if ((lemmaLower === 'demonstrate' || wordLower === 'demonstrate') && isActionVerb(word, words, index)) {
+                    hasDemonstrateVerb = true;
+                }
+
+                // Check if it's a weak verb (only if used as action verb)
+                if (weakVerbs.has(lemmaLower) || weakVerbs.has(wordLower)) {
+                    if (isActionVerb(word, words, index)) {
+                        weakVerbsFound.push(word);
+                    }
+                }
+
+                // Check Bloom's taxonomy (only if used as action verb)
+                for (const [level, verbs] of Object.entries(bloomsData)) {
+                    if (verbs.includes(lemmaLower) || verbs.includes(wordLower)) {
+                        if (isActionVerb(word, words, index)) {
+                            if (!verbAnalysis[level]) {
+                                verbAnalysis[level] = [];
+                            }
+                            verbAnalysis[level].push({
+                                word: word,
+                                lemma: lemma,
+                                index: index
+                            });
+                            foundVerbs.push({ word, level, index });
+                        }
+                    }
+                }
+            });
+
+            // Calculate quality metrics
+            const uniqueVerbs = new Set(foundVerbs.map(v => v.lemma || v.word));
+            const verbCount = uniqueVerbs.size;
+            
+            // Count higher-order verbs (Analyzing, Evaluating, Creating)
+            const higherOrderLevels = ['Analyzing', 'Evaluating', 'Creating'];
+            const higherOrderCount = foundVerbs.filter(v => higherOrderLevels.includes(v.level)).length;
+            const lowerOrderCount = foundVerbs.length - higherOrderCount;
+            
+            let qualityScore = 100;
+            let issues = [];
+
+            // Check for 'Demonstrate' issues
+            if (hasDemonstrateVerb || startsWithDemonstrate) {
+                qualityScore -= 15;
+                if (startsWithDemonstrate) {
+                    issues.push('starts-with-demonstrate');
+                } else {
+                    issues.push('uses-demonstrate');
+                }
+            }
+
+            if (weakVerbsFound.length > 0) {
+                qualityScore -= 30;
+                issues.push('weak-verbs');
+            }
+
+            if (vaguePhrasesFound.length > 0) {
+                qualityScore -= 30;
+                issues.push('vague-phrases');
+            }
+
+            if (verbCount > 5) {
+                qualityScore -= 40;
+                issues.push('high-overload');
+            } else if (verbCount > 3) {
+                qualityScore -= 20;
+                issues.push('moderate-overload');
+            }
+
+            if (verbCount === 0 && Object.keys(verbAnalysis).length === 0) {
+                qualityScore -= 50;
+                issues.push('no-verbs');
+            }
+
+            // Capstone-specific scoring
+            if (isCapstone) {
+                // For capstone, penalize if there are lower-order verbs and few/no higher-order verbs
+                if (lowerOrderCount > 0 && higherOrderCount === 0) {
+                    qualityScore -= 40;
+                    issues.push('capstone-no-higher-order');
+                } else if (lowerOrderCount > higherOrderCount) {
+                    qualityScore -= 25;
+                    issues.push('capstone-insufficient-higher-order');
+                }
+                
+                // Reward strong higher-order focus
+                if (higherOrderCount > 0 && lowerOrderCount === 0) {
+                    qualityScore = Math.min(100, qualityScore + 10);
+                }
+            }
+
+            qualityScore = Math.max(0, qualityScore);
+
+            let rating;
+            if (qualityScore >= 90) rating = 'Excellent';
+            else if (qualityScore >= 70) rating = 'Good';
+            else if (qualityScore >= 50) rating = 'Fair';
+            else rating = 'Revise';
+
+            return {
+                text: text,
+                verbAnalysis: verbAnalysis,
+                foundVerbs: foundVerbs,
+                qualityScore: qualityScore,
+                rating: rating,
+                verbCount: verbCount,
+                weakVerbs: Array.from(new Set(weakVerbsFound)),
+                vaguePhrases: vaguePhrasesFound,
+                issues: issues,
+                isCapstone: isCapstone,
+                hasDemonstrateVerb: hasDemonstrateVerb,
+                startsWithDemonstrate: startsWithDemonstrate,
+                higherOrderCount: higherOrderCount,
+                lowerOrderCount: lowerOrderCount
+            };
+        }
+
+        function tokenize(text) {
+            return text.match(/\b[\w']+\b/g) || [];
+        }
+
+        function lemmatize(word) {
+            const wordLower = word.toLowerCase();
+            
+            // Handle -ing forms
+            if (wordLower.endsWith('ing')) {
+                let base = wordLower.slice(0, -3);
+                // Double consonant (running -> run)
+                if (base.length >= 3 && base[base.length-1] === base[base.length-2]) {
+                    base = base.slice(0, -1);
+                }
+                // Try common patterns
+                if (base.endsWith('y')) return base;
+                // Common -e dropping (analyzing -> analyze)
+                const withE = base + 'e';
+                return withE;
+            }
+            // Handle -ed forms
+            if (wordLower.endsWith('ed')) {
+                let base = wordLower.slice(0, -2);
+                // Double consonant
+                if (base.length >= 3 && base[base.length-1] === base[base.length-2]) {
+                    base = base.slice(0, -1);
+                }
+                return base;
+            }
+            // Handle -es forms
+            if (wordLower.endsWith('es')) {
+                return wordLower.slice(0, -2);
+            }
+            // Handle -s forms (plural or 3rd person)
+            if (wordLower.endsWith('s') && wordLower.length > 3) {
+                return wordLower.slice(0, -1);
+            }
+            
+            return wordLower;
+        }
+
+        function isActionVerb(word, words, index) {
+            const wordLower = word.toLowerCase();
+            
+            // Rule 1: Preceded by modal/auxiliary verbs = ACTION VERB
+            if (index > 0) {
+                const prevWord = words[index - 1].toLowerCase();
+                const modalVerbs = ['will', 'can', 'should', 'must', 'could', 'would', 
+                                   'shall', 'may', 'might', 'to'];
+                if (modalVerbs.includes(prevWord)) {
+                    return true;
+                }
+            }
+            
+            // Rule 2: Verb forms as first/main verb in sentence
+            if (index === 0 || (index === 1 && words[0].match(/^[A-Z]/))) {
+                if (wordLower.endsWith('ing') || isCommonVerb(wordLower)) {
+                    return false; // Likely gerund at start (e.g., "Learning objectives...")
+                }
+            }
+            
+            // Rule 3: Check if followed by object/complement (typical of action verbs)
+            if (index < words.length - 1) {
+                const nextWord = words[index + 1].toLowerCase();
+                // Followed by articles, determiners, or nouns = likely action verb
+                const followedByObject = ['the', 'a', 'an', 'their', 'this', 'these', 'those'].includes(nextWord);
+                if (followedByObject) {
+                    return true;
+                }
+            }
+            
+            // Rule 4: -ing forms are usually NOT action verbs unless after modal
+            if (wordLower.endsWith('ing')) {
+                // Check if it's "using", "following", etc in a prepositional phrase
+                if (index > 0) {
+                    const prevWord = words[index - 1].toLowerCase();
+                    if (['by', 'after', 'before', 'while', 'when'].includes(prevWord)) {
+                        return true; // "by analyzing" = action verb
+                    }
+                }
+                return false; // Most -ing forms are gerunds (nouns)
+            }
+            
+            // Rule 5: -ed forms check context
+            if (wordLower.endsWith('ed')) {
+                // "The analyzed data" vs "Students analyzed data"
+                if (index > 0) {
+                    const prevWord = words[index - 1].toLowerCase();
+                    // After articles = adjective, not verb
+                    if (['the', 'a', 'an'].includes(prevWord)) {
+                        return false;
+                    }
+                }
+                return true; // Likely past tense verb
+            }
+            
+            // Rule 6: Base forms - check position and context
+            // After subjects (Students, They, We) = likely verb
+            if (index > 0) {
+                const prevWord = words[index - 1].toLowerCase();
+                const subjects = ['students', 'learners', 'they', 'we', 'you', 'i'];
+                if (subjects.includes(prevWord)) {
+                    return true;
+                }
+            }
+            
+            // Rule 7: If none of the above, be conservative
+            // Only accept if it has clear verb indicators
+            const verbEndings = ['ize', 'ise', 'ate', 'fy'];
+            for (const ending of verbEndings) {
+                if (wordLower.endsWith(ending)) {
+                    return true;
+                }
+            }
+            
+            // Default: if we found it in our Bloom's list and it could be a verb, accept it
+            // but this is the weakest signal
+            return true;
+        }
+
+        function isCommonVerb(word) {
+            const common = ['is', 'are', 'was', 'were', 'be', 'been', 'being', 
+                          'have', 'has', 'had', 'do', 'does', 'did'];
+            return common.includes(word);
+        }
+
+        function displayResults(analysis) {
+            const resultsDiv = document.getElementById('results');
+            
+            // Build Bloom's pyramid visualization
+            const pyramidHTML = buildBloomsPyramid(analysis.verbAnalysis);
+            
+            let html = `
+    <div class="quality-overview">
+        <div class="quality-score">
+            ${pyramidHTML}
+            <div class="quality-details">
+                <div class="quality-rating">${analysis.rating}</div>
+                <div class="score-circle ${getScoreClass(analysis.qualityScore)}">
+                    ${analysis.qualityScore}
+                </div>
+            </div>
+            <div class="quality-metrics">
+                <div class="metric">
+                    <div class="metric-icon ${analysis.verbCount > 3 ? 'icon-warning' : 'icon-good'}">
+                        ${analysis.verbCount > 3 ? '⚠' : '✓'}
+                    </div>
+                    <span>${analysis.verbCount} Action Verb${analysis.verbCount !== 1 ? 's' : ''}</span>
+                </div>
+                ${analysis.isCapstone ? `
+                <div class="metric">
+                    <div class="metric-icon ${analysis.higherOrderCount > 0 ? 'icon-good' : 'icon-error'}">
+                        ${analysis.higherOrderCount > 0 ? '✓' : '✗'}
+                    </div>
+                    <span style="font-weight: 700; color: #7b1fa2;">📚 Capstone: ${analysis.higherOrderCount} Higher-Order</span>
+                </div>
+                ` : ''}
+                <div class="metric">
+                    <div class="metric-icon ${analysis.weakVerbs.length > 0 ? 'icon-error' : 'icon-good'}">
+                        ${analysis.weakVerbs.length > 0 ? '✗' : '✓'}
+                    </div>
+                    <span>${analysis.weakVerbs.length} Weak Verb${analysis.weakVerbs.length !== 1 ? 's' : ''}</span>
+                </div>
+                <div class="metric">
+                    <div class="metric-icon ${analysis.vaguePhrases.length > 0 ? 'icon-error' : 'icon-good'}">
+                        ${analysis.vaguePhrases.length > 0 ? '✗' : '✓'}
+                    </div>
+                    <span>${analysis.vaguePhrases.length} Vague Phrase${analysis.vaguePhrases.length !== 1 ? 's' : ''}</span>
+                </div>
+                ${analysis.hasDemonstrateVerb || analysis.startsWithDemonstrate ? `
+                <div class="metric">
+                    <div class="metric-icon icon-warning">
+                        ⚠
+                    </div>
+                    <span>Uses 'demonstrate'</span>
+                </div>
+                ` : ''}
+            </div>
+`;
+
+if (analysis.issues.length > 0) {
+    html += '<div class="issues-summary">';
+    
+    if (analysis.startsWithDemonstrate) {
+        html += `<span class="issue-badge badge-demonstrate">⚠ Starts with 'Demonstrate'</span>`;
+    } else if (analysis.hasDemonstrateVerb) {
+        html += `<span class="issue-badge badge-demonstrate">Contains 'Demonstrate' verb</span>`;
+    }
+    
+    if (analysis.weakVerbs.length > 0) {
+        html += `<span class="issue-badge badge-weak">Weak verbs: ${analysis.weakVerbs.join(', ')}</span>`;
+    }
+    if (analysis.vaguePhrases.length > 0) {
+        html += `<span class="issue-badge badge-vague">Vague: ${analysis.vaguePhrases.join(', ')}</span>`;
+    }
+    
+    if (analysis.isCapstone) {
+        if (analysis.issues.includes('capstone-no-higher-order')) {
+            html += `<span class="issue-badge badge-capstone">⚠ Capstone needs higher-order verbs (Analyze/Evaluate/Create)</span>`;
+        } else if (analysis.issues.includes('capstone-insufficient-higher-order')) {
+            html += `<span class="issue-badge badge-capstone">⚠ Capstone: ${analysis.higherOrderCount} higher-order vs ${analysis.lowerOrderCount} lower-order verbs</span>`;
+        }
+    }
+    
+    if (analysis.verbCount > 5) {
+        html += `<span class="issue-badge badge-overload">High verb overload (${analysis.verbCount})</span>`;
+    } else if (analysis.verbCount > 3) {
+        html += `<span class="issue-badge badge-overload">Moderate overload (${analysis.verbCount})</span>`;
+    }
+    html += '</div>';
+}
+
+html += '</div></div>';
+
+           if (Object.keys(analysis.verbAnalysis).length > 0) {
+    html += `
+        <div class="highlighted-text">
+            <div class="section-title">📝 Highlighted Text</div>
+            <p>${highlightVerbs(analysis.text, analysis.foundVerbs)}</p>
+        </div>
+    `;
+    
+    html += `
+        <div class="blooms-analysis">
+            <div class="section-title">
+                🎓 Action Verbs by Bloom's Level
+            </div>
+            <div class="verb-grid">
+    `;
+
+    const levelOrder = ['Creating', 'Evaluating', 'Analyzing', 'Applying', 'Understanding', 'Remembering'];
+    
+    levelOrder.forEach(level => {
+        if (analysis.verbAnalysis[level]) {
+            const verbs = analysis.verbAnalysis[level];
+            const levelClass = level.toLowerCase();
+            
+            html += `
+                <div class="bloom-level level-${levelClass}">
+                    <div class="level-header">
+                        <div class="level-name">${level}</div>
+                        <div class="level-badge badge-${levelClass}">${verbs.length}</div>
+                    </div>
+                    <div class="verbs-list">
+            `;
+
+            verbs.forEach(verb => {
+                html += `<span class="verb-chip chip-${levelClass}" title="${verb.lemma}">${verb.word}</span>`;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+            } else {
+                html += `
+                    <div class="no-verbs">
+                        <p style="font-size: 48px; margin-bottom: 15px;">🔍</p>
+                        <p><strong>No Bloom's Taxonomy action verbs detected</strong></p>
+                        <p style="margin-top: 10px; color: #666;">Try using specific action verbs like analyze, evaluate, create, or apply.</p>
+                    </div>
+                `;
+            }
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function buildBloomsPyramid(verbAnalysis) {
+            const levels = [
+                { name: 'Creating', key: 'Creating', class: 'pyramid-creating' },
+                { name: 'Evaluating', key: 'Evaluating', class: 'pyramid-evaluating' },
+                { name: 'Analyzing', key: 'Analyzing', class: 'pyramid-analyzing' },
+                { name: 'Applying', key: 'Applying', class: 'pyramid-applying' },
+                { name: 'Understanding', key: 'Understanding', class: 'pyramid-understanding' },
+                { name: 'Remembering', key: 'Remembering', class: 'pyramid-remembering' }
+            ];
+
+            let html = '<div class="blooms-pyramid">';
+            
+            levels.forEach(level => {
+                const count = verbAnalysis[level.key] ? verbAnalysis[level.key].length : 0;
+                const activeClass = count > 0 ? 'active' : 'inactive';
+                const countBadge = count > 0 ? `<span class="pyramid-count">${count}</span>` : '';
+                
+                html += `
+                    <div class="pyramid-level ${level.class} ${activeClass}" 
+                         title="${level.name}${count > 0 ? ': ' + count + ' verb' + (count !== 1 ? 's' : '') : ''}">
+                        ${level.name}${countBadge}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        function getScoreClass(score) {
+            if (score >= 90) return 'score-excellent';
+            if (score >= 70) return 'score-good';
+            if (score >= 50) return 'score-fair';
+            return 'score-poor';
+        }
+
+        function highlightVerbs(text, foundVerbs) {
+            if (foundVerbs.length === 0) return text;
+
+            const sortedVerbs = [...foundVerbs].sort((a, b) => b.index - a.index);
+            
+            let words = text.match(/\b[\w']+\b|\s+|[^\w\s]/g) || [];
+            let wordIndex = 0;
+            let result = '';
+            
+            words.forEach((segment, i) => {
+                if (/\b[\w']+\b/.test(segment)) {
+                    const verb = sortedVerbs.find(v => v.index === wordIndex);
+                    if (verb) {
+                        const levelClass = verb.level.toLowerCase();
+                        result += `<span class="highlight hl-${levelClass}" title="${verb.level}">${segment}</span>`;
+                    } else {
+                        result += segment;
+                    }
+                    wordIndex++;
+                } else {
+                    result += segment;
+                }
+            });
+
+            return result || text;
+        }
+
+        document.getElementById('objectiveInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                analyzeObjective();
+            }
+        });
+    </script>
+</body>
+</html>
